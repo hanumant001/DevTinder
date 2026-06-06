@@ -1,19 +1,30 @@
 const express = require("express");
 
 const app = express();
+const { adminAuth } = require("./middlewares/auth");
+app.use("/admin", adminAuth);
 
-app.use("/", (req,res)=>{
-    res.send("this is main")
+app.get("/admin/data", (req, res) => {
+  res.send("Admin Data sent");
 });
-app.use("/main", (req,res)=>{
-    res.send("this is Dashboard")
+
+app.get("/admin/delete", (req, res) => {
+  res.send("Data deleted");
 });
 
-app.use("/profile",(req,res)=>{
-    res.send("this Is Profile Section")
-})
+app.get(
+  "/main",
+  (req, res, next) => {
+    console.log("1st route handler");
 
-
-app.listen(1111, ()=>{
-    console.log("server listning on the port 0001")
-})
+    res.send("1st result");
+    next();
+  },
+  (req, res) => {
+    console.log("second route handler");
+    res.send("2nd result");
+  },
+);
+app.listen(1111, () => {
+  console.log("server listning on the port 0001");
+});
