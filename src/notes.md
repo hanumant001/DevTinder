@@ -96,3 +96,96 @@ app.get("/admin/data", (req, res) => {
 app.get("/admin/delete", (req, res) => {
   res.send("Data deleted");
 });
+
+
+**how to handle error?**
+
+route handler will have first param as err (err,req,res,next)
+
+there are 2 methods to handle errors
+
+1> using wild card rotes which commonly handles the errors but it should in the bottom of all routes
+
+app.get("/userData", (req, res) => {
+  throw new Error("rerfe");
+  res.send("userData fetched");
+});
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("something went wrong");
+  }
+});
+above if eny where the error comes it will catched in wild card rotes 
+
+2> using try catch method in a perticular routes
+
+
+app.get("/userData", (req, res) => {
+  try {
+    throw new Error("rerfe");
+    res.send("data sent");
+  } catch (err) {
+    res.status(500).send("something went wrong in fetching user Data");
+  }
+});
+
+
+**connect to Database**
+step 1 : install Mongoose
+Step 2: create config folder
+step 3 : require ("mongoose")
+step 4 : connect with URl 
+
+const connectDB = async () => {
+  await mongoose.connect(
+    "mongodb+srv://hanumantgh007_db_user:xA5%212BXYBNWv8Bz@dummycluster.tahh4jx.mongodb.net/devTinder",
+  );
+};
+
+module.exports = connectDB
+
+step 5 : call the above function in app.js
+
+
+connectDB()
+  .then(() => {
+    console.log("Database is connected successfully");
+    app.listen(1111, () => {
+      console.log("server listning on the port 0001");
+    });
+  })
+  .catch((error) => {
+    console.log("problem in connecting Database");
+    console.log(error.message);
+  });
+
+**create Schema for each collection**
+
+create folder called models and create file for each collection and for each Schema like user
+
+const mongoose = require("mongoose");
+
+const userSchema = mongoose.Schema({
+  firstName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+  },
+  emailId: {
+    type: String,
+  },
+  password: {
+    type: String,
+  },
+  age: {
+    type: Number,
+  },
+  gender: {
+    type: String,
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+module.exports = User;
+
