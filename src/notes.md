@@ -189,3 +189,23 @@ const userSchema = mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 module.exports = User;
 
+**call User in app to call Post API **
+
+const User = require("./models/user");
+
+app.post("/signup", async (req, res) => {
+  const user = await new User({
+    firstName: "Hanumant",
+    lastName: "Hanchinamani",
+    emailId: "hanumant001@gmail.com",
+    password: "hanumant@123",
+  });
+  try {
+    user.save();
+    res.send("user Data is saved");
+  } catch (err) {
+    res.status(400).send("Error saving the User");
+  }
+});
+
+
