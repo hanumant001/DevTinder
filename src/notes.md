@@ -26,7 +26,7 @@ res.send("Hi From Home profile page")
 git
 git init
 commit and push
-in git website create repo
+in git website create repo 
 from there copy the code to merge newly created repo and local code
 
 **how to handle dynamic routes or query params from URL to terminal**
@@ -209,3 +209,29 @@ app.post("/signup", async (req, res) => {
 });
 
 
+**how to use PATCH method to update**
+
+
+// update the user Data
+app.patch("/user", async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.body.userId, req.body);
+    res.send("user update successful");
+  } catch (error) {
+    res.status(400).send("something went wrong");
+  }
+});
+
+**How to delete user**
+
+
+// delete user by _Id
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    res.send("User Deleted Successfully");
+  } catch (error) {
+    res.status(400).send("something went wrong while deleting the User");
+  }
+});
