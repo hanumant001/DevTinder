@@ -13,7 +13,14 @@
   "author": "Hanumant",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
-    "mongoose": "^9.6.3"
+    "i": "^0.3.7",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.3",
+    "npm": "^11.17.0",
+    "validator": "^13.15.35",
+    "validator.js": "^2.0.4"
   }
 }

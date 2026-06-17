@@ -235,3 +235,149 @@ app.delete("/user", async (req, res) => {
     res.status(400).send("something went wrong while deleting the User");
   }
 });
+
+
+**API level validation by using only javascript**
+
+
+// update the user Data
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
+  const data = req?.body;
+  try {
+    // adding some conditions
+    const allowedKeys = ["password", "age", "gender", "photo", "skill"];
+    const notAllowedKeys = [];
+    const isDataKeysAllowed = Object.keys(data).every((k) => {
+      if (!allowedKeys.includes(k)) {
+        notAllowedKeys.push(k);
+        return false;
+      } else {
+        return true;
+      }
+    });
+    console.log("notAllowedKeys",notAllowedKeys)
+    if (!isDataKeysAllowed) {
+      throw new Error(`Updates are not allowed ${notAllowedKeys}`);
+    }
+    if (data.skill.length > 10) {
+      throw new Error("Skill cant not be more than 10");
+    }
+    const user = await User.findByIdAndUpdate(userId, data, {
+      runValidators: true,
+    });
+    res.send("user update successful");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+**Authentication and auth**
+
+Login
+  ↓
+Server verifies credentials
+  ↓
+Server creates JWT:
+{
+  "sub": "123",
+  "role": "admin"
+}
+  ↓
+JWT sent to browser
+  ↓
+Browser stores JWT
+  ↓
+Request with JWT
+  ↓
+Server verifies JWT
+  ↓
+Server extracts userId (sub)
+  ↓
+Optional: Fetch user details from DB
+
+use JWT token generator package
+const jwt = require("jsonwebtoken");
+// and use cookies parser 
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
+// need to create token when user logged in successfully
+
+
+// login API////
+app.post("/login", async (req, res) => {
+  const { emailId, password } = req.body;
+  try {
+    const user = await User.findOne({ emailId: emailId });
+    console.log(emailId);
+    if (!user) {
+      throw new Error("invalid credentials");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+
+      //jwt.sign will receive 3 params 1> hidden Data, 2> passwordForBackEnd 3> options
+
+      const token = await jwt.sign({ _id: user._id }, "DevTinder@123");
+      // passing the generated token to API
+      res.cookie("token", token);
+      res.send("Login Successful");
+    } else {
+      throw new Error("invalid credentials");
+    }
+  } catch (err) {
+    res.status(400).send("error while logging in");
+  }
+});
+
+// now from UI it should be stored 
+// once client hit other API's the JWT token passed from the client every time
+
+
+///// profile API
+
+app.get("/profile", async (req, res) => {
+  try {
+    // we can get it from req.cookies and it will be parsed by the help of app.use(cookieParser());
+    const { token } = req.cookies;
+    if (!token) {
+      throw new Error("Token is not valid");
+    }
+    // here we can verify the token coming from client
+    // will return the hidden data
+    const decodedMessage = await jwt.verify(token, "DevTinder@123");
+    const { _id } = decodedMessage;
+    const findTheUser = await User.findById(_id);
+    if (!findTheUser) {
+      throw new Error("User Not Found");
+    }
+    res.send(findTheUser);
+  } catch (err) {
+    res.status(400).send("something went wrong while in Profile Data");
+  }
+});
+
+
+**middlewares for to authenticate**
+
+
+const userAuth = async (req, res, next) => {
+  try {
+    const { token } = req.cookies;
+    const decodedObj = await jwt.verify(token, "DevTinder@123");
+
+    const { _id } = decodedObj;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("Unauthorized request");
+    }
+    //this will passed to the req of the HTTP request where this middleware will be called
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(400).send("User is unauthorized");
+  }
+};
+
+module.exports = { userAuth };
