@@ -54,26 +54,27 @@ const userSchema = mongoose.Schema(
     skill: {
       type: [String],
     },
+    about: {
+      type: String,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-userSchema.methods.getJWT = async function () {
+userSchema.methods.getJWTFromSchemaMethod = async function () {
   const user = this;
+  console.log("user", user);
   const token = jwt.sign({ _id: user }, "DevTinder@123", {
     expiresIn: "1d",
   });
   return token;
 };
 
-userSchema.methods.bcrypt = async function (enteredPassword) {
+userSchema.methods.getBcryptMethodSchema = async function (enteredPassword) {
   const user = this;
-  const isPasswordValid = await bcrypt.compare(
-    enteredPassword,
-    user?.password,
-  );
+  const isPasswordValid = await bcrypt.compare(enteredPassword, user?.password);
   return isPasswordValid;
 };
 

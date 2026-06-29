@@ -12,4 +12,28 @@ const validateSignupData = (req) => {
   }
 };
 
-module.exports = {validateSignupData}
+const validateEditProfileData = (req) => {
+  const data = req?.body;
+  
+  // try { 
+    const allowedKeys = ["about", "age", "gender", "photo", "skill"];
+    const notAllowedKeys = [];
+    const isDataKeysAllowed = Object.keys(data).every((k) => {
+      if (!allowedKeys.includes(k)) {
+        notAllowedKeys.push(k);
+        return false;
+      } else {
+        return true;
+      }
+    });
+    if (!isDataKeysAllowed) {
+      throw new Error(`Updates are not allowed ${notAllowedKeys}`);
+    }
+  //   if (data.skill.length > 10) {
+  //     throw new Error("Skill cant not be more than 10");
+  //   }
+  // // } catch (error) {
+  // //   console.error(error.message);
+  // // }
+};
+module.exports = { validateSignupData, validateEditProfileData };
