@@ -381,3 +381,16 @@ const userAuth = async (req, res, next) => {
 };
 
 module.exports = { userAuth };
+
+
+ **middlewares using pre**
+
+ 
+connectionRequestSchema.pre("save", function () {
+  if (this.fromUserId.equals(this.toUserId)) {
+    throw new Error("Cannot send the connection request to yourself");
+  }
+  // next();
+});
+
+its the schema level middleware which act as event the current one is executed on save

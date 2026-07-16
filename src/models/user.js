@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
+const validatorPackage = require("validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema(
       unique: true,
       trim: true,
       validate(value) {
-        if (!validator.isEmail(value)) {
+        if (!validatorPackage.isEmail(value)) {
           throw new Error("Entered Email is not valid");
         }
       },
@@ -46,7 +46,7 @@ const userSchema = mongoose.Schema(
       default:
         "https://png.pngtree.com/png-clipart/20230930/original/pngtree-man-avatar-isolated-png-image_13022170.png",
       validate(value) {
-        if (!validator.isURL(value)) {
+        if (!validatorPackage.isURL(value)) {
           throw new Error("invalid Photo URL");
         }
       },
@@ -65,7 +65,7 @@ const userSchema = mongoose.Schema(
 
 userSchema.methods.getJWTFromSchemaMethod = async function () {
   const user = this;
-  console.log("user", user);
+  // console.log("user", user);
   const token = jwt.sign({ _id: user }, "DevTinder@123", {
     expiresIn: "1d",
   });
