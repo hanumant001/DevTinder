@@ -394,3 +394,19 @@ connectionRequestSchema.pre("save", function () {
 });
 
 its the schema level middleware which act as event the current one is executed on save
+
+
+**we can have connection between connection like connection and user collection**
+by using ref and populate keys
+
+add ref in fromUserId of connectionRequest schema so that it anchor to UserSchema 
+
+then while needed use provide 
+const findingReqests = await ConnectionRequestModel.find({
+      toUserId: loggedInUserId,
+      status: "interested",
+    }).populate("fromUserId", ["firstName", "lastName","photo","skill"]);
+
+    **query operators $nin , $ne, $and**
+
+    query operators are used for to apply the condition on DB query building
